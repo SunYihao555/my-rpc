@@ -39,6 +39,7 @@ public class SocketRpcServer implements RpcRequestTransport {
                 RpcRequest request = null;
                 try {
                     request = (RpcRequest)objectInputStream.readObject();
+                    new Thread().start();
                     System.out.println(request.getRequestId());
                     RpcResponse rpcResponse = new RpcResponse();
                     rpcResponse.setDate(new String("这是答复信息"));
@@ -51,9 +52,6 @@ public class SocketRpcServer implements RpcRequestTransport {
                 if(request!=null) {
                     request.getMethodName();
                 }
-                socket.close();
-
-
 
             }
 
