@@ -18,12 +18,15 @@ public class SocketRpcRequestHandlerRunnable implements Runnable{
     @Override
     public void run() {
         try {
+            System.out.println("开始处理");
             ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             RpcRequest request = (RpcRequest) objectInputStream.readObject();
+            System.out.println(request.getRequestId());
             RpcResponse handle = RequestHandler.handle(request);
             objectOutputStream.writeObject(handle);
             objectOutputStream.flush();
+            System.out.println("处理完毕");
         } catch (IOException  | ClassNotFoundException e) {
             e.printStackTrace();
         }

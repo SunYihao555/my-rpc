@@ -7,12 +7,11 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RpcApplicationContext {
-    public Map<String,Object> iocMap = new ConcurrentHashMap<>();
+    public  static  Map<String,Class<?>> iocMap = new ConcurrentHashMap<>();
     private String parsePath;
     private List<String> classNameList = new ArrayList<>();
     public RpcApplicationContext(String parsePath){
@@ -53,7 +52,6 @@ public class RpcApplicationContext {
         }
         try {
             for (String className : classNameList) {
-                System.out.println(className);
                 Class<?> clazz = Class.forName(className);
                 if(clazz.isAnnotationPresent(RpcService.class)){
                     RpcService rpcService =clazz.getAnnotation(RpcService.class);
@@ -66,8 +64,10 @@ public class RpcApplicationContext {
                         version += "0";
                     }
                     for (Class<?> anInterface : clazz.getInterfaces()) {
-                        String beanName = anInterface.getSimpleName().substring(0,1).toLowerCase()+anInterface.getSimpleName().substring(1)+version+group;
-                        iocMap.put(beanName,clazz.newInstance());
+                        String beanName = anInterface.getName().split("\\.")[anInterface.getName().split("\\.").length-1];
+                        beanName = beanName+version+group;
+                        System.out.println(beanName);
+                        iocMap.put(beanName,clazz);
                     }
 
                 }

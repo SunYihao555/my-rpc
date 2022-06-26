@@ -1,5 +1,6 @@
 package com.learn.remoting.transport.socket;
 
+import com.learn.container.RpcApplicationContext;
 import com.learn.remoting.RpcRequestTransport;
 import com.learn.remoting.dto.RpcRequest;
 import com.learn.remoting.dto.RpcResponse;
@@ -17,6 +18,10 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 
 public class SocketRpcServer implements RpcRequestTransport {
+    static {
+        RpcApplicationContext rpcApplicationContext = new RpcApplicationContext("rpc-config.xml");
+        rpcApplicationContext.refresh();
+    }
     private ExecutorService threadPool;
     public SocketRpcServer(){
 
@@ -34,24 +39,23 @@ public class SocketRpcServer implements RpcRequestTransport {
             serverSocket.bind(new InetSocketAddress(port));
             Socket socket;
             while((socket = serverSocket.accept())!=null){
-                InputStream inputStream = socket.getInputStream();
-                ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-                RpcRequest request = null;
+//                InputStream inputStream = socket.getInputStream();
+//                ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+//                RpcRequest request = null;
                 try {
-                    request = (RpcRequest)objectInputStream.readObject();
-                    new Thread().start();
-                    System.out.println(request.getRequestId());
-                    RpcResponse rpcResponse = new RpcResponse();
-                    rpcResponse.setDate(new String("这是答复信息"));
-                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-                    objectOutputStream.writeObject(rpcResponse);
-                    objectOutputStream.flush();
-                } catch (ClassNotFoundException e) {
+//                    request = (RpcRequest)objectInputStream.readObject();
+//                    RpcResponse rpcResponse = new RpcResponse();
+//                    rpcResponse.setDate(new String("这是答复信息"));
+                    new Thread(new SocketRpcRequestHandlerRunnable(socket)).start();
+//                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+//                    objectOutputStream.writeObject(rpcResponse);
+//                    objectOutputStream.flush();
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
-                if(request!=null) {
-                    request.getMethodName();
-                }
+//                if(request!=null) {
+//                    request.getMethodName();
+//                }
 
             }
 
